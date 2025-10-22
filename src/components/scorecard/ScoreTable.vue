@@ -7,7 +7,7 @@
         <thead>
           <tr>
             <th>Table 1</th>
-            <th v-for="i in 4" :key="i" class="player-header">Player #{{ i }}</th>
+            <th v-for="i in 4" :key="i" class="player-header">Joueur #{{ i }}</th>
           </tr>
         </thead>
         <tbody>
@@ -40,7 +40,7 @@
                   :value="corp.name"
                   :disabled="isCorporationSelected(corp.name, i-1)"
                 >
-                  {{ corp.name }} ({{ corp.value }})
+                  {{ corp.name }}
                 </option>
               </select>
             </td>
@@ -56,6 +56,7 @@
                 @input="handleScoreChange"
                 class="score-input"
                 min="0"
+                value="0"
               >
             </td>
           </tr>
@@ -244,6 +245,10 @@ watch(() => props.scores, (newScores) => {
   border-color: #667eea;
 }
 
+.player-header {
+  background: #5c6bc0;
+}
+
 .save-section {
   text-align: center;
   padding: 20px;
@@ -253,19 +258,27 @@ watch(() => props.scores, (newScores) => {
 }
 
 .btn {
-  padding: 12px 40px;
+  padding: 10px 30px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: bold;
+  border-radius: 5px;
+  font-size: 16px;
   cursor: pointer;
   transition: transform 0.2s;
 }
 
 .btn:hover {
   transform: scale(1.05);
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
