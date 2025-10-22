@@ -45,10 +45,10 @@ const message = ref(null)
 
 const playerNames = ref(['', '', '', ''])
 const scores = ref([
-  { corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 },
-  { corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 },
-  { corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 },
-  { corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 }
+  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 },
+  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 },
+  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 },
+  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 }
 ])
 
 const scorecardTitle = computed(() => {
@@ -100,7 +100,14 @@ function loadScorecard(gameId) {
   
   // Clear all scores
   scores.value.forEach(score => {
-    Object.keys(score).forEach(key => score[key] = 0)
+    score.corporationName = ''
+    score.corporation = 0
+    score.tr = 0
+    score.rewards = 0
+    score.objectives = 0
+    score.forests = 0
+    score.cities = 0
+    score.cards = 0
   })
   playerNames.value = ['', '', '', '']
   

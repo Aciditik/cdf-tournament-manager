@@ -29,16 +29,16 @@
             <td class="category-cell">Corporation</td>
             <td v-for="i in 4" :key="i">
               <select 
-                v-model.number="localScores[i-1].corporation"
-                @change="handleScoreChange"
+                v-model="localScores[i-1].corporationName"
+                @change="handleCorporationChange(i-1)"
                 class="score-select"
               >
-                <option value="0">Select Corporation</option>
+                <option value="">Select Corporation</option>
                 <option 
                   v-for="corp in corporations" 
                   :key="corp.name" 
-                  :value="corp.value"
-                  :disabled="selectedCorporations.includes(corp.name) && localScores[i-1].corporation !== corp.value"
+                  :value="corp.name"
+                  :disabled="isCorporationSelected(corp.name, i-1)"
                 >
                   {{ corp.name }} ({{ corp.value }})
                 </option>
@@ -96,22 +96,19 @@ const emit = defineEmits(['update:scores', 'calculate', 'save'])
 
 const localScores = ref(JSON.parse(JSON.stringify(props.scores)))
 
-// Track selected corporations for duplicate prevention
-const selectedCorporations = computed(() => {
-  return localScores.value.map((score, index) => {
-    const corp = corporations.find(c => c.value === score.corporation)
-    return corp ? corp.name : null
-  })
+// Initialize corporationName field if it doesn't exist
+localScores.value.forEach(score => {
+  if (!score.corporationName) {
+    score.corporationName = ''
+  }
 })
 
-// Get available corporations for each player (excluding already selected ones)
-const getAvailableCorporations = (playerIndex) => {
-  return corporations.filter(corp => {
-    const selectedByOther = selectedCorporations.value.some((selected, idx) => 
-      idx !== playerIndex && selected === corp.name
-    )
-    return !selectedByOther
-  })
+// Check if a corporation is already selected by another player
+const isCorporationSelected = (corpName, currentPlayerIndex) => {
+  if (!corpName) return false
+  return localScores.value.some((score, idx) => 
+    idx !== currentPlayerIndex && score.corporationName === corpName
+  )
 }
 
 const corporations = [
@@ -137,6 +134,20 @@ const scoreCategories = [
   { key: 'cities', label: 'Villes' },
   { key: 'cards', label: 'Cartes' }
 ]
+
+function handleCorporationChange(playerIndex) {
+  const corpName = localScores.value[playerIndex].corporationName
+  const corp = corporations.find(c => c.name === corpName)
+  
+  // Update the corporation value based on selected name
+  if (corp) {
+    localScores.value[playerIndex].corporation = corp.value
+  } else {
+    localScores.value[playerIndex].corporation = 0
+  }
+  
+  handleScoreChange()
+}
 
 function handleScoreChange() {
   emit('update:scores', localScores.value)
