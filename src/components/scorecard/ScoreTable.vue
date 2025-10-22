@@ -3,7 +3,8 @@
     <div class="scorecard">
       <div class="scorecard-header">{{ scorecardTitle }}</div>
       
-      <table class="score-table">
+      <div class="table-wrapper">
+        <table class="score-table">
         <thead>
           <tr>
             <th>Table 1</th>
@@ -74,6 +75,7 @@
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
 
     <div class="save-section">
@@ -185,9 +187,15 @@ watch(() => props.scores, (newScores) => {
   font-weight: bold;
 }
 
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .score-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px;
 }
 
 .score-table th {

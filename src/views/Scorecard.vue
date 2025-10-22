@@ -57,9 +57,16 @@ const scorecardTitle = computed(() => {
 })
 
 const totals = computed(() => {
-  return scores.value.map(score => 
-    Object.values(score).reduce((sum, val) => sum + (val || 0), 0)
-  )
+  return scores.value.map(score => {
+    // Only sum numeric fields, exclude corporationName
+    return (score.corporation || 0) + 
+           (score.tr || 0) + 
+           (score.rewards || 0) + 
+           (score.objectives || 0) + 
+           (score.forests || 0) + 
+           (score.cities || 0) + 
+           (score.cards || 0)
+  })
 })
 
 const ranks = computed(() => {
@@ -135,17 +142,17 @@ async function saveScorecard() {
   // Corporation list for name lookup
   const corporations = [
     { name: 'Credicor', value: 0 },
-    { name: 'Ecoline', value: 3 },
-    { name: 'Helion', value: 5 },
-    { name: 'Mining Guild', value: 2 },
-    { name: 'Interplanetary Cinematics', value: 4 },
-    { name: 'Inventrix', value: 1 },
-    { name: 'Phobolog', value: 3 },
-    { name: 'Tharsis Republic', value: 2 },
-    { name: 'Thorgate', value: 4 },
-    { name: 'United Nations Mars Initiative', value: 5 },
-    { name: 'Teractor', value: 3 },
-    { name: 'Saturn Systems', value: 2 }
+    { name: 'Ecoline', value: 0 },
+    { name: 'Helion', value: 0 },
+    { name: 'Mining Guild', value: 0 },
+    { name: 'Interplanetary Cinematics', value: 0 },
+    { name: 'Inventrix', value: 0 },
+    { name: 'Phobolog', value: 0 },
+    { name: 'Tharsis Republic', value: 0 },
+    { name: 'Thorgate', value: 0 },
+    { name: 'United Nations Mars Initiative', value: 0 },
+    { name: 'Teractor', value: 0 },
+    { name: 'Saturn Systems', value: 0 }
   ]
   
   const scorecardData = {
@@ -200,11 +207,14 @@ onMounted(async () => {
   min-height: 100vh;
   background-color: #f5f5f5;
   padding: 15px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .container {
   max-width: 900px;
   margin: 0 auto;
+  width: 100%;
 }
 
 h1 {
@@ -232,5 +242,16 @@ h1 {
   background-color: #f8d7da;
   color: #721c24;
   border: 2px solid #f5c6cb;
+}
+
+@media (max-width: 768px) {
+  .scorecard-page {
+    padding: 10px;
+  }
+  
+  h1 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
 }
 </style>
