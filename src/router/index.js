@@ -31,6 +31,13 @@ const router = createRouter({
   ]
 })
 
+// Handle GitHub Pages redirect
+const redirect = new URLSearchParams(window.location.search).get('redirect')
+if (redirect) {
+  window.history.replaceState({}, '', redirect)
+  window.location.href = redirect
+}
+
 // Auth guard
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth) {
