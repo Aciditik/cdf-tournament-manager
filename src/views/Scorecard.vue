@@ -125,15 +125,43 @@ async function saveScorecard() {
     return
   }
   
+  // Corporation list for name lookup
+  const corporations = [
+    { name: 'Credicor', value: 0 },
+    { name: 'Ecoline', value: 3 },
+    { name: 'Helion', value: 5 },
+    { name: 'Mining Guild', value: 2 },
+    { name: 'Interplanetary Cinematics', value: 4 },
+    { name: 'Inventrix', value: 1 },
+    { name: 'Phobolog', value: 3 },
+    { name: 'Tharsis Republic', value: 2 },
+    { name: 'Thorgate', value: 4 },
+    { name: 'United Nations Mars Initiative', value: 5 },
+    { name: 'Teractor', value: 3 },
+    { name: 'Saturn Systems', value: 2 }
+  ]
+  
   const scorecardData = {
     gameId: selectedGameId.value,
     savedAt: new Date().toISOString(),
-    players: playerNames.value.map((name, i) => ({
-      name,
-      scores: { ...scores.value[i] },
-      total: totals.value[i],
-      rank: ranks.value[i]
-    }))
+    players: playerNames.value.map((name, i) => {
+      const playerScores = { ...scores.value[i] }
+      
+      // Convert corporation value to object with name and value
+      const corpValue = playerScores.corporation || 0
+      const corp = corporations.find(c => c.value === corpValue) || { name: 'Select Corporation', value: 0 }
+      playerScores.corporation = {
+        value: corp.value,
+        name: corp.name
+      }
+      
+      return {
+        name,
+        scores: playerScores,
+        total: totals.value[i],
+        rank: ranks.value[i]
+      }
+    })
   }
   
   try {

@@ -34,7 +34,12 @@
                 class="score-select"
               >
                 <option value="0">Select Corporation</option>
-                <option v-for="corp in corporations" :key="corp.name" :value="corp.value">
+                <option 
+                  v-for="corp in corporations" 
+                  :key="corp.name" 
+                  :value="corp.value"
+                  :disabled="selectedCorporations.includes(corp.name) && localScores[i-1].corporation !== corp.value"
+                >
                   {{ corp.name }} ({{ corp.value }})
                 </option>
               </select>
@@ -71,13 +76,13 @@
     </div>
 
     <div class="save-section">
-      <button class="btn" @click="$emit('save')">💾 Save Scores</button>
+      <button class="btn" @click="handleSave">💾 Save Scores</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
   scorecardTitle: String,
@@ -90,6 +95,24 @@ const props = defineProps({
 const emit = defineEmits(['update:scores', 'calculate', 'save'])
 
 const localScores = ref(JSON.parse(JSON.stringify(props.scores)))
+
+// Track selected corporations for duplicate prevention
+const selectedCorporations = computed(() => {
+  return localScores.value.map((score, index) => {
+    const corp = corporations.find(c => c.value === score.corporation)
+    return corp ? corp.name : null
+  })
+})
+
+// Get available corporations for each player (excluding already selected ones)
+const getAvailableCorporations = (playerIndex) => {
+  return corporations.filter(corp => {
+    const selectedByOther = selectedCorporations.value.some((selected, idx) => 
+      idx !== playerIndex && selected === corp.name
+    )
+    return !selectedByOther
+  })
+}
 
 const corporations = [
   { name: 'Credicor', value: 0 },
@@ -118,6 +141,12 @@ const scoreCategories = [
 function handleScoreChange() {
   emit('update:scores', localScores.value)
   emit('calculate')
+}
+
+function handleSave() {
+  if (confirm('Are you sure you want to save these scores?')) {
+    emit('save')
+  }
 }
 
 // Watch for external score changes
