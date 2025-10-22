@@ -79,7 +79,7 @@ function showMessage(text, type) {
 
 onMounted(() => {
   // Generate QR code for scorecard page
-  const scorecardUrl = 'https://aciditik.github.io/cdf-tournament-manager/scorecard'
+  const scorecardUrl = 'https://aciditik.github.io/cdf-tournament-manager/#/scorecard'
   
   // Create canvas element
   const canvas = document.createElement('canvas')

@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import Registration from '@/views/Registration.vue'
 import Login from '@/views/Login.vue'
 import AdminPanel from '@/views/AdminPanel.vue'
 import Scorecard from '@/views/Scorecard.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(),
   routes: [
     {
       path: '/',
@@ -30,13 +30,6 @@ const router = createRouter({
     }
   ]
 })
-
-// Handle GitHub Pages redirect
-const redirect = new URLSearchParams(window.location.search).get('redirect')
-if (redirect) {
-  window.history.replaceState({}, '', redirect)
-  window.location.href = redirect
-}
 
 // Auth guard
 router.beforeEach((to, from, next) => {
