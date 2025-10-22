@@ -116,17 +116,17 @@ const isCorporationSelected = (corpName, currentPlayerIndex) => {
 
 const corporations = [
   { name: 'Credicor', value: 0 },
-  { name: 'Ecoline', value: 3 },
-  { name: 'Helion', value: 5 },
-  { name: 'Mining Guild', value: 2 },
-  { name: 'Interplanetary Cinematics', value: 4 },
-  { name: 'Inventrix', value: 1 },
-  { name: 'Phobolog', value: 3 },
-  { name: 'Tharsis Republic', value: 2 },
-  { name: 'Thorgate', value: 4 },
-  { name: 'United Nations Mars Initiative', value: 5 },
-  { name: 'Teractor', value: 3 },
-  { name: 'Saturn Systems', value: 2 }
+  { name: 'Ecoline', value: 0 },
+  { name: 'Helion', value: 0 },
+  { name: 'Mining Guild', value: 0 },
+  { name: 'Interplanetary Cinematics', value: 0 },
+  { name: 'Inventrix', value: 0 },
+  { name: 'Phobolog', value: 0 },
+  { name: 'Tharsis Republic', value: 0 },
+  { name: 'Thorgate', value: 0 },
+  { name: 'United Nations Mars Initiative', value: 0 },
+  { name: 'Teractor', value: 0 },
+  { name: 'Saturn Systems', value: 0 }
 ]
 
 const scoreCategories = [
