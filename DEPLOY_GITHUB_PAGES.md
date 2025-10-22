@@ -85,7 +85,7 @@ https://YOUR-USERNAME.github.io/cdf-tournament-manager/
 Update the QR code in `src/views/Registration.vue` (line 82):
 
 ```javascript
-const scorecardUrl = 'https://YOUR-USERNAME.github.io/cdf-tournament-manager/scorecard'
+const scorecardUrl = 'https://aciditik.github.io/cdf-tournament-manager/scorecard'
 ```
 
 Then redeploy:

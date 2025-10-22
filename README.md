@@ -42,3 +42,15 @@ npm run build
 ```sh
 npm run lint
 ```
+
+### Deploy to GitHub Pages
+
+```bash
+# 1. Commit your changes
+git add .
+git commit -m "Your update message"
+git push
+
+# 2. Redeploy to GitHub Pages
+npm run deploy
+```
