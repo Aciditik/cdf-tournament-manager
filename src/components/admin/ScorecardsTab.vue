@@ -3,6 +3,7 @@
     <div class="action-buttons">
       <button class="action-btn" @click="refreshData">🔄 Refresh Scorecards</button>
       <button class="action-btn" @click="exportRankings">📅 Export Rankings</button>
+      <button class="action-btn-delete" @click="deleteScorecards">🗑️ Delete Scorecards</button>
     </div>
 
     <!-- Scorecards Display -->
@@ -17,22 +18,22 @@
         <table class="scorecard-table">
           <thead>
             <tr>
-              <th>Player</th>
-              <th>Corp</th>
-              <th>TR</th>
-              <th>Rewards</th>
-              <th>Objectives</th>
-              <th>Forests</th>
-              <th>Cities</th>
-              <th>Cards</th>
+              <th>Joueurs</th>
+              <th>Corporation</th>
+              <th>NT</th>
+              <th>Objectifs</th>
+              <th>Récompenses</th>
+              <th>Forêts</th>
+              <th>Villes</th>
+              <th>Cartes</th>
               <th>Total</th>
-              <th>Rank</th>
+              <th>Classement</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="player in scorecard.players" :key="player.name">
               <td><strong>{{ player.name }}</strong></td>
-              <td>{{ player.scores.corporation }}</td>
+              <td>{{ player.scores.corporationName }}</td>
               <td>{{ player.scores.tr }}</td>
               <td>{{ player.scores.rewards }}</td>
               <td>{{ player.scores.objectives }}</td>
@@ -91,6 +92,17 @@ function exportRankings() {
   URL.revokeObjectURL(url)
   emit('message', '✅ Rankings exported', 'success')
 }
+
+async function deleteScorecards() {
+  if (confirm('Are you sure you want to delete ALL scorecards? This action cannot be undone.')) {
+    try {
+      await gameStore.deleteScorecards()
+      emit('message', '✅ Scorecards deleted', 'success')
+    } catch (error) {
+      emit('message', '❌ Error deleting scorecards: ' + error.message, 'error')
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -111,6 +123,18 @@ function exportRankings() {
 .action-btn {
   padding: 10px 20px;
   background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.action-btn-delete {
+  padding: 10px 20px;
+  background: #c82333;
   color: white;
   border: none;
   border-radius: 5px;

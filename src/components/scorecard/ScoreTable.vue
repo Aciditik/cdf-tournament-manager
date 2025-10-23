@@ -131,8 +131,8 @@ const corporations = [
 
 const scoreCategories = [
   { key: 'tr', label: 'NT' },
-  { key: 'rewards', label: 'Récompenses' },
   { key: 'objectives', label: 'Objectifs' },
+  { key: 'rewards', label: 'Récompenses' },
   { key: 'forests', label: 'Forêts' },
   { key: 'cities', label: 'Villes' },
   { key: 'cards', label: 'Cartes' }

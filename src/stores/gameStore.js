@@ -180,6 +180,11 @@ export const useGameStore = defineStore('game', {
       await this.saveData()
     },
 
+    async deleteScorecards() {
+      this.scorecards = []
+      await this.saveData()
+    },
+
     async saveData() {
       await api.saveData(this.players, this.scorecards)
     }
