@@ -1,47 +1,59 @@
 <template>
-  <div class="admin-panel">
-    <div class="admin-container">
-      <div class="admin-header">
-        <h1>⚙️ Admin Panel</h1>
-        <button class="logout-btn" @click="logout">Logout</button>
+  <div class="min-h-screen bg-[#f5f5f5] p-5">
+    <div class="max-w-[1200px] mx-auto">
+      <div class="flex justify-between items-center bg-white py-5 px-[30px] rounded-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.1)] mb-5">
+        <h1 class="text-[#333] text-[28px] m-0">⚙️ Admin Panel</h1>
+        <button class="px-5 py-2.5 bg-[#dc3545] text-white border-none rounded-[5px] cursor-pointer text-sm font-bold transition-colors hover:bg-[#c82333]" @click="logout">Logout</button>
       </div>
 
-      <div v-if="message" :class="['message', message.type]">
+      <div v-if="message" :class="[
+        'p-3 rounded-lg mb-5 text-sm text-center',
+        message.type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+      ]">
         {{ message.text }}
       </div>
 
       <!-- Stats -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h3>Total Players</h3>
-          <p>{{ gameStore.totalPlayers }}</p>
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 mb-5">
+        <div class="bg-white p-5 rounded-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.1)] text-center">
+          <h3 class="text-[#666] text-sm mb-2.5 uppercase tracking-wider">Total Players</h3>
+          <p class="text-primary text-4xl font-bold m-0">{{ gameStore.totalPlayers }}</p>
         </div>
-        <div class="stat-card">
-          <h3>Total Games</h3>
-          <p>{{ gameStore.totalGames }}</p>
+        <div class="bg-white p-5 rounded-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.1)] text-center">
+          <h3 class="text-[#666] text-sm mb-2.5 uppercase tracking-wider">Total Games</h3>
+          <p class="text-primary text-4xl font-bold m-0">{{ gameStore.totalGames }}</p>
         </div>
-        <div class="stat-card">
-          <h3>Unassigned</h3>
-          <p>{{ gameStore.unassignedCount }}</p>
+        <div class="bg-white p-5 rounded-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.1)] text-center">
+          <h3 class="text-[#666] text-sm mb-2.5 uppercase tracking-wider">Unassigned</h3>
+          <p class="text-primary text-4xl font-bold m-0">{{ gameStore.unassignedCount }}</p>
         </div>
       </div>
 
       <!-- Tabs -->
-      <div class="tabs">
+      <div class="flex gap-2.5 mb-5 border-b-2 border-[#eee] bg-white px-5 rounded-t-[10px]">
         <button 
-          :class="['tab', { active: activeTab === 'players' }]" 
+          :class="[
+            'py-[15px] px-[25px] bg-transparent border-none border-b-[3px] border-b-transparent cursor-pointer text-base font-bold text-[#666] transition-all hover:text-primary',
+            { 'text-primary border-b-primary': activeTab === 'players' }
+          ]" 
           @click="activeTab = 'players'"
         >
           👥 All Players
         </button>
         <button 
-          :class="['tab', { active: activeTab === 'games' }]" 
+          :class="[
+            'py-[15px] px-[25px] bg-transparent border-none border-b-[3px] border-b-transparent cursor-pointer text-base font-bold text-[#666] transition-all hover:text-primary',
+            { 'text-primary border-b-primary': activeTab === 'games' }
+          ]" 
           @click="activeTab = 'games'"
         >
           🎮 Game Management
         </button>
         <button 
-          :class="['tab', { active: activeTab === 'scorecards' }]" 
+          :class="[
+            'py-[15px] px-[25px] bg-transparent border-none border-b-[3px] border-b-transparent cursor-pointer text-base font-bold text-[#666] transition-all hover:text-primary',
+            { 'text-primary border-b-primary': activeTab === 'scorecards' }
+          ]" 
           @click="activeTab = 'scorecards'"
         >
           🏆 Scorecards & Rankings
@@ -88,132 +100,5 @@ onMounted(async () => {
   } catch (error) {
     showMessage('❌ Error loading data: ' + error.message, 'error')
   }
-})
+});
 </script>
-
-<style scoped>
-.admin-panel {
-  min-height: 100vh;
-  background: #f5f5f5;
-  padding: 20px;
-}
-
-.admin-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.admin-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 20px 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-}
-
-.admin-header h1 {
-  color: #333;
-  font-size: 28px;
-  margin: 0;
-}
-
-.logout-btn {
-  padding: 10px 20px;
-  background: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: background 0.3s;
-}
-
-.logout-btn:hover {
-  background: #c82333;
-}
-
-.message {
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  text-align: center;
-}
-
-.message.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.message.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.stat-card {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.stat-card h3 {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.stat-card p {
-  color: #667eea;
-  font-size: 36px;
-  font-weight: bold;
-  margin: 0;
-}
-
-.tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #eee;
-  background: white;
-  padding: 0 20px;
-  border-radius: 10px 10px 0 0;
-}
-
-.tab {
-  padding: 15px 25px;
-  background: transparent;
-  border: none;
-  border-bottom: 3px solid transparent;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  color: #666;
-  transition: all 0.3s;
-}
-
-.tab:hover {
-  color: #667eea;
-}
-
-.tab.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
-}
-</style>

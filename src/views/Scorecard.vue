@@ -1,9 +1,12 @@
 <template>
-  <div class="scorecard-page">
-    <div class="container">
-      <h1>🎯 Game Scorecard</h1>
+  <div class="min-h-screen bg-[#f5f5f5] p-[15px] w-full box-border">
+    <div class="max-w-[900px] mx-auto w-full">
+      <h1 class="text-[#333] mb-[15px] text-center text-2xl md:text-xl md:mb-2.5">🎯 Game Scorecard</h1>
       
-      <div v-if="message" :class="['message', message.type]">
+      <div v-if="message" :class="[
+        'text-center p-3 mb-5 rounded-lg font-bold',
+        message.type === 'success' ? 'bg-green-100 text-green-800 border-2 border-green-200' : 'bg-red-100 text-red-800 border-2 border-red-200'
+      ]">
         {{ message.text }}
       </div>
       
@@ -201,57 +204,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style scoped>
-.scorecard-page {
-  min-height: 100vh;
-  background-color: #f5f5f5;
-  padding: 15px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-h1 {
-  color: #333;
-  margin-bottom: 15px;
-  text-align: center;
-  font-size: 24px;
-}
-
-.message {
-  text-align: center;
-  padding: 12px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  font-weight: bold;
-}
-
-.message.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 2px solid #c3e6cb;
-}
-
-.message.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 2px solid #f5c6cb;
-}
-
-@media (max-width: 768px) {
-  .scorecard-page {
-    padding: 10px;
-  }
-  
-  h1 {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-}
-</style>

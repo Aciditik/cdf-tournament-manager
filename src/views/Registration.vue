@@ -1,40 +1,50 @@
 <template>
-  <div class="registration-page">
-    <div class="container">
-      <h1>🎮 Player Registration</h1>
-      <p>Enter your name to join the game</p>
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark p-5">
+    <div class="bg-white p-10 rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.3)] text-center max-w-[400px] w-full">
+      <h1 class="text-[#333] mb-2.5 text-2xl">🎮 Player Registration</h1>
+      <p class="text-[#666] mb-5">Enter your name to join the game</p>
 
-      <div v-if="message" :class="['message', message.type]">
+      <div v-if="message" :class="[
+        'p-3 rounded-lg mb-5 text-sm',
+        message.type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+      ]">
         {{ message.text }}
       </div>
 
-      <div class="registration-form">
+      <div class="mb-[30px]">
         <input 
           type="text" 
           v-model="playerName" 
           placeholder="Enter your name" 
           maxlength="50"
           @keyup.enter="registerPlayer"
+          class="w-full p-3 border-2 border-primary rounded-lg text-base mb-[15px] box-border focus:outline-none focus:border-primary-dark"
         >
-        <button @click="registerPlayer" :disabled="loading">
+        <button 
+          @click="registerPlayer" 
+          :disabled="loading"
+          class="w-full p-3 bg-gradient-to-br from-primary to-primary-dark text-white border-none rounded-lg text-base font-bold cursor-pointer transition-transform hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed"
+        >
           {{ loading ? 'Registering...' : 'Register Player' }}
         </button>
       </div>
 
-      <div class="divider"><span>OR</span></div>
+      <div class="my-[30px] relative text-center before:content-[''] before:absolute before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#ddd]">
+        <span class="bg-white px-[15px] relative text-[#999] text-sm">OR</span>
+      </div>
 
-      <p style="font-size: 14px; color: #666;">Scan QR code to view scorecard</p>
-      <div id="qrcode" ref="qrcodeContainer"></div>
+      <p class="text-sm text-[#666]">Scan QR code to view scorecard</p>
+      <div id="qrcode" ref="qrcodeContainer" class="inline-block my-5 p-[15px] bg-white rounded-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.1)]"></div>
       
-      <div class="instructions">
+      <div class="bg-[#f8f9fa] p-[15px] rounded-lg text-sm text-[#666] text-left mt-5">
         <strong>Instructions:</strong><br>
         1. Enter your name above and click Register<br>
         2. Scan the QR code with your phone<br>
         3. Enter scores after your game
       </div>
 
-      <div class="admin-link">
-        <router-link to="/login">🔐 Admin Login</router-link>
+      <div class="mt-5">
+        <router-link to="/login" class="text-primary no-underline font-bold hover:underline">🔐 Admin Login</router-link>
       </div>
     </div>
   </div>
@@ -115,152 +125,3 @@ onMounted(() => {
   qrCode.append(qrcodeContainer.value)
 })
 </script>
-
-<style scoped>
-.registration-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-}
-
-.container {
-  background: white;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  text-align: center;
-  max-width: 400px;
-  width: 100%;
-}
-
-h1 {
-  color: #333;
-  margin-bottom: 10px;
-  font-size: 24px;
-}
-
-p {
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.registration-form {
-  margin-bottom: 30px;
-}
-
-.registration-form input {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #667eea;
-  border-radius: 8px;
-  font-size: 16px;
-  margin-bottom: 15px;
-  box-sizing: border-box;
-}
-
-.registration-form input:focus {
-  outline: none;
-  border-color: #764ba2;
-}
-
-.registration-form button {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.registration-form button:hover {
-  transform: scale(1.02);
-}
-
-.registration-form button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.message {
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
-.message.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.message.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-.divider {
-  margin: 30px 0;
-  position: relative;
-  text-align: center;
-}
-
-.divider::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: #ddd;
-}
-
-.divider span {
-  background: white;
-  padding: 0 15px;
-  position: relative;
-  color: #999;
-  font-size: 14px;
-}
-
-#qrcode {
-  display: inline-block;
-  margin: 20px 0;
-  padding: 15px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.instructions {
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 14px;
-  color: #666;
-  text-align: left;
-  margin-top: 20px;
-}
-
-.admin-link {
-  margin-top: 20px;
-}
-
-.admin-link a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.admin-link a:hover {
-  text-decoration: underline;
-}
-</style>

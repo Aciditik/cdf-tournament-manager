@@ -1,37 +1,37 @@
 <template>
-  <div class="tab-content">
-    <div class="action-buttons">
-      <button class="action-btn" @click="refreshPlayers">🔄 Refresh</button>
-      <button class="action-btn" @click="exportPlayers">📥 Export JSON</button>
-      <button class="action-btn danger" @click="clearAllPlayers">🗑️ Clear All</button>
+  <div class="bg-white p-5 rounded-b-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.1)]">
+    <div class="flex gap-2.5 mb-5 flex-wrap">
+      <button class="py-2.5 px-5 bg-primary text-white border-none rounded-[5px] cursor-pointer text-sm font-bold transition-colors hover:bg-[#5568d3]" @click="refreshPlayers">🔄 Refresh</button>
+      <button class="py-2.5 px-5 bg-primary text-white border-none rounded-[5px] cursor-pointer text-sm font-bold transition-colors hover:bg-[#5568d3]" @click="exportPlayers">📥 Export JSON</button>
+      <button class="py-2.5 px-5 bg-[#dc3545] text-white border-none rounded-[5px] cursor-pointer text-sm font-bold transition-colors hover:bg-[#c82333]" @click="clearAllPlayers">🗑️ Clear All</button>
     </div>
 
-    <table>
-      <thead>
+    <table class="w-full border-collapse">
+      <thead class="bg-[#f8f9fa]">
         <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Game</th>
-          <th>Registered At</th>
-          <th>Actions</th>
+          <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">#</th>
+          <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">Name</th>
+          <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">Game</th>
+          <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">Registered At</th>
+          <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="gameStore.loading">
-          <td colspan="5" style="text-align: center; padding: 30px;">Loading...</td>
+          <td colspan="5" class="text-center p-[30px]">Loading...</td>
         </tr>
         <tr v-else-if="gameStore.players.length === 0">
-          <td colspan="5" style="text-align: center; padding: 30px; color: #999;">
+          <td colspan="5" class="text-center p-[30px] text-[#999]">
             No players registered yet
           </td>
         </tr>
-        <tr v-else v-for="(player, index) in sortedPlayers" :key="player.id">
-          <td>{{ index + 1 }}</td>
-          <td><strong>{{ player.name }}</strong></td>
-          <td>{{ getGameName(player.gameId) }}</td>
-          <td>{{ formatDate(player.created_at) }}</td>
-          <td>
-            <button class="delete-btn" @click="deletePlayer(player.id)">Delete</button>
+        <tr v-else v-for="(player, index) in sortedPlayers" :key="player.id" class="hover:bg-[#f8f9fa]">
+          <td class="p-3 border-b border-[#dee2e6]">{{ index + 1 }}</td>
+          <td class="p-3 border-b border-[#dee2e6]"><strong>{{ player.name }}</strong></td>
+          <td class="p-3 border-b border-[#dee2e6]">{{ getGameName(player.gameId) }}</td>
+          <td class="p-3 border-b border-[#dee2e6]">{{ formatDate(player.created_at) }}</td>
+          <td class="p-3 border-b border-[#dee2e6]">
+            <button class="py-1.5 px-3 bg-[#dc3545] text-white border-none rounded cursor-pointer text-xs hover:bg-[#c82333]" @click="deletePlayer(player.id)">Delete</button>
           </td>
         </tr>
       </tbody>
@@ -105,83 +105,3 @@ async function clearAllPlayers() {
   }
 }
 </script>
-
-<style scoped>
-.tab-content {
-  background: white;
-  padding: 20px;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.action-buttons {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.action-btn {
-  padding: 10px 20px;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: background 0.3s;
-}
-
-.action-btn:hover {
-  background: #5568d3;
-}
-
-.action-btn.danger {
-  background: #dc3545;
-}
-
-.action-btn.danger:hover {
-  background: #c82333;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-thead {
-  background: #f8f9fa;
-}
-
-th {
-  padding: 12px;
-  text-align: left;
-  font-weight: bold;
-  color: #333;
-  border-bottom: 2px solid #dee2e6;
-}
-
-td {
-  padding: 12px;
-  border-bottom: 1px solid #dee2e6;
-}
-
-tbody tr:hover {
-  background: #f8f9fa;
-}
-
-.delete-btn {
-  padding: 6px 12px;
-  background: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.delete-btn:hover {
-  background: #c82333;
-}
-</style>

@@ -1,20 +1,24 @@
 <template>
-  <div class="login-page">
-    <div class="container">
-      <h1>🔐 Admin Login</h1>
-      <p>Enter your credentials to access the admin panel</p>
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark p-5">
+    <div class="bg-white p-10 rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.3)] text-center max-w-[400px] w-full">
+      <h1 class="text-[#333] mb-2.5 text-2xl">🔐 Admin Login</h1>
+      <p class="text-[#666] mb-5">Enter your credentials to access the admin panel</p>
 
-      <div v-if="message" :class="['message', message.type]">
+      <div v-if="message" :class="[
+        'p-3 rounded-lg mb-5 text-sm',
+        message.type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+      ]">
         {{ message.text }}
       </div>
 
-      <div class="login-form">
+      <div class="mb-5">
         <input 
           type="text" 
           v-model="username" 
           placeholder="Username" 
           autocomplete="username"
           @keyup.enter="login"
+          class="w-full p-3 border-2 border-primary rounded-lg text-base mb-[15px] box-border focus:outline-none focus:border-primary-dark"
         >
         <input 
           type="password" 
@@ -22,14 +26,19 @@
           placeholder="Password" 
           autocomplete="current-password"
           @keyup.enter="login"
+          class="w-full p-3 border-2 border-primary rounded-lg text-base mb-[15px] box-border focus:outline-none focus:border-primary-dark"
         >
-        <button @click="login" :disabled="loading">
+        <button 
+          @click="login" 
+          :disabled="loading"
+          class="w-full p-3 bg-gradient-to-br from-primary to-primary-dark text-white border-none rounded-lg text-base font-bold cursor-pointer transition-transform hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed"
+        >
           {{ loading ? 'Logging in...' : 'Login' }}
         </button>
       </div>
 
-      <div class="admin-link">
-        <router-link to="/">← Back to Registration</router-link>
+      <div class="mt-5">
+        <router-link to="/" class="text-primary no-underline font-bold hover:underline">← Back to Registration</router-link>
       </div>
     </div>
   </div>
@@ -80,109 +89,3 @@ function showMessage(text, type) {
   }, 4000)
 }
 </script>
-
-<style scoped>
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-}
-
-.container {
-  background: white;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  text-align: center;
-  max-width: 400px;
-  width: 100%;
-}
-
-h1 {
-  color: #333;
-  margin-bottom: 10px;
-  font-size: 24px;
-}
-
-p {
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.login-form {
-  margin-bottom: 20px;
-}
-
-.login-form input {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #667eea;
-  border-radius: 8px;
-  font-size: 16px;
-  margin-bottom: 15px;
-  box-sizing: border-box;
-}
-
-.login-form input:focus {
-  outline: none;
-  border-color: #764ba2;
-}
-
-.login-form button {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.login-form button:hover {
-  transform: scale(1.02);
-}
-
-.login-form button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.message {
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
-.message.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.message.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-.admin-link {
-  margin-top: 20px;
-}
-
-.admin-link a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.admin-link a:hover {
-  text-decoration: underline;
-}
-</style>

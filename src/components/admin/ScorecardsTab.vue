@@ -1,47 +1,47 @@
 <template>
-  <div class="tab-content">
-    <div class="action-buttons">
-      <button class="action-btn" @click="refreshData">🔄 Refresh Scorecards</button>
-      <button class="action-btn" @click="exportRankings">📅 Export Rankings</button>
-      <button class="action-btn-delete" @click="deleteScorecards">🗑️ Delete Scorecards</button>
+  <div class="bg-white p-5 rounded-b-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.1)]">
+    <div class="flex gap-2.5 mb-5 flex-wrap">
+      <button class="py-2.5 px-5 bg-primary text-white border-none rounded-[5px] cursor-pointer text-sm font-bold transition-colors hover:bg-[#5568d3]" @click="refreshData">🔄 Refresh Scorecards</button>
+      <button class="py-2.5 px-5 bg-primary text-white border-none rounded-[5px] cursor-pointer text-sm font-bold transition-colors hover:bg-[#5568d3]" @click="exportRankings">📅 Export Rankings</button>
+      <button class="py-2.5 px-5 bg-[#c82333] text-white border-none rounded-[5px] cursor-pointer text-sm font-bold transition-colors" @click="deleteScorecards">🗑️ Delete Scorecards</button>
     </div>
 
     <!-- Scorecards Display -->
-    <div v-if="gameStore.scorecards.length === 0" class="empty-state">
+    <div v-if="gameStore.scorecards.length === 0" class="text-center py-[60px] px-5 text-[#999]">
       <p>No scorecards submitted yet.</p>
     </div>
-    <div v-else class="scorecards-container">
-      <div v-for="scorecard in gameStore.scorecards" :key="scorecard.gameId" class="scorecard-card">
-        <h3>🎮 {{ getGameName(scorecard.gameId) }}</h3>
-        <p class="saved-date">Saved: {{ formatDate(scorecard.savedAt) }}</p>
+    <div v-else class="mb-10">
+      <div v-for="scorecard in gameStore.scorecards" :key="scorecard.gameId" class="bg-[#f8f9fa] p-5 rounded-[10px] mb-5 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+        <h3 class="text-primary mb-1.5">🎮 {{ getGameName(scorecard.gameId) }}</h3>
+        <p class="text-[#666] text-sm mb-[15px]">Saved: {{ formatDate(scorecard.savedAt) }}</p>
         
-        <table class="scorecard-table">
-          <thead>
+        <table class="w-full border-collapse bg-white rounded-[5px] overflow-hidden">
+          <thead class="bg-primary text-white">
             <tr>
-              <th>Joueurs</th>
-              <th>Corporation</th>
-              <th>NT</th>
-              <th>Objectifs</th>
-              <th>Récompenses</th>
-              <th>Forêts</th>
-              <th>Villes</th>
-              <th>Cartes</th>
-              <th>Total</th>
-              <th>Classement</th>
+              <th class="p-2.5 text-center border-b border-[#dee2e6]">Joueurs</th>
+              <th class="p-2.5 text-center border-b border-[#dee2e6]">Corporation</th>
+              <th class="p-2.5 text-center border-b border-[#dee2e6]">NT</th>
+              <th class="p-2.5 text-center border-b border-[#dee2e6]">Objectifs</th>
+              <th class="p-2.5 text-center border-b border-[#dee2e6]">Récompenses</th>
+              <th class="p-2.5 text-center border-b border-[#dee2e6]">Forêts</th>
+              <th class="p-2.5 text-center border-b border-[#dee2e6]">Villes</th>
+              <th class="p-2.5 text-center border-b border-[#dee2e6]">Cartes</th>
+              <th class="p-2.5 text-center border-b border-[#dee2e6]">Total</th>
+              <th class="p-2.5 text-center border-b border-[#dee2e6]">Classement</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="player in scorecard.players" :key="player.name">
-              <td><strong>{{ player.name }}</strong></td>
-              <td>{{ player.scores.corporationName }}</td>
-              <td>{{ player.scores.tr }}</td>
-              <td>{{ player.scores.rewards }}</td>
-              <td>{{ player.scores.objectives }}</td>
-              <td>{{ player.scores.forests }}</td>
-              <td>{{ player.scores.cities }}</td>
-              <td>{{ player.scores.cards }}</td>
-              <td><strong>{{ player.total }}</strong></td>
-              <td><strong>{{ player.rank }}</strong></td>
+            <tr v-for="player in scorecard.players" :key="player.name" class="hover:bg-[#f8f9fa]">
+              <td class="p-2.5 text-center border-b border-[#dee2e6]"><strong>{{ player.name }}</strong></td>
+              <td class="p-2.5 text-center border-b border-[#dee2e6]">{{ player.scores.corporationName }}</td>
+              <td class="p-2.5 text-center border-b border-[#dee2e6]">{{ player.scores.tr }}</td>
+              <td class="p-2.5 text-center border-b border-[#dee2e6]">{{ player.scores.rewards }}</td>
+              <td class="p-2.5 text-center border-b border-[#dee2e6]">{{ player.scores.objectives }}</td>
+              <td class="p-2.5 text-center border-b border-[#dee2e6]">{{ player.scores.forests }}</td>
+              <td class="p-2.5 text-center border-b border-[#dee2e6]">{{ player.scores.cities }}</td>
+              <td class="p-2.5 text-center border-b border-[#dee2e6]">{{ player.scores.cards }}</td>
+              <td class="p-2.5 text-center border-b border-[#dee2e6]"><strong>{{ player.total }}</strong></td>
+              <td class="p-2.5 text-center border-b border-[#dee2e6]"><strong>{{ player.rank }}</strong></td>
             </tr>
           </tbody>
         </table>
@@ -49,8 +49,8 @@
     </div>
 
     <!-- Rankings Table -->
-    <div class="rankings-section">
-      <h2>🏆 Overall Rankings</h2>
+    <div class="mt-10">
+      <h2 class="text-primary mb-5">🏆 Overall Rankings</h2>
       <RankingsTable :rankings="gameStore.rankings" />
     </div>
   </div>
@@ -104,109 +104,3 @@ async function deleteScorecards() {
   }
 }
 </script>
-
-<style scoped>
-.tab-content {
-  background: white;
-  padding: 20px;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.action-buttons {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.action-btn {
-  padding: 10px 20px;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: background 0.3s;
-}
-
-.action-btn-delete {
-  padding: 10px 20px;
-  background: #c82333;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: background 0.3s;
-}
-
-.action-btn:hover {
-  background: #5568d3;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #999;
-}
-
-.scorecards-container {
-  margin-bottom: 40px;
-}
-
-.scorecard-card {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.scorecard-card h3 {
-  color: #667eea;
-  margin-bottom: 5px;
-}
-
-.saved-date {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 15px;
-}
-
-.scorecard-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.scorecard-table th,
-.scorecard-table td {
-  padding: 10px;
-  text-align: center;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.scorecard-table thead {
-  background: #667eea;
-  color: white;
-}
-
-.scorecard-table tbody tr:hover {
-  background: #f8f9fa;
-}
-
-.rankings-section {
-  margin-top: 40px;
-}
-
-.rankings-section h2 {
-  color: #667eea;
-  margin-bottom: 20px;
-}
-</style>
