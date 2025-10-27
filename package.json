@@ -13,8 +13,10 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
+    "@loskir/styled-qr-code-node": "^1.5.2",
     "axios": "^1.12.2",
     "pinia": "^3.0.3",
+    "qr-code-styling": "^1.9.2",
     "qrcode": "^1.5.4",
     "qrcode-vue3": "^1.7.1",
     "vue": "^3.5.22",

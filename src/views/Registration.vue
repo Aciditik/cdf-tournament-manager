@@ -43,7 +43,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useGameStore } from '@/stores/gameStore'
-import QRCode from 'qrcode'
+import QRCodeStyling from 'qr-code-styling'
 
 const gameStore = useGameStore()
 
@@ -78,21 +78,41 @@ function showMessage(text, type) {
 }
 
 onMounted(() => {
-  // Generate QR code for scorecard page
   const scorecardUrl = 'https://aciditik.github.io/cdf-tournament-manager/#/scorecard'
   
-  // Create canvas element
-  const canvas = document.createElement('canvas')
-  qrcodeContainer.value.appendChild(canvas)
-  
-  QRCode.toCanvas(canvas, scorecardUrl, {
-    width: 180,
-    margin: 2,
-    color: {
-      dark: '#000000',
-      light: '#ffffff'
+  const qrCode = new QRCodeStyling({
+    data: scorecardUrl,
+    width: 250,
+    height: 250,
+    margin: 10,
+    type: 'canvas',
+    image: 'public/favicon/web-app-manifest-192x192.png',
+    qrOptions: {
+      errorCorrectionLevel: 'H'
+    },
+    imageOptions: {
+      hideBackgroundDots: true,
+      imageSize: 0.4,
+      margin: 5,
+      crossOrigin: 'anonymous'
+    },
+    dotsOptions: {
+      type: 'rounded',
+      color: '#000000'
+    },
+    cornersSquareOptions: {
+      type: 'extra-rounded',
+      color: '#000000'
+    },
+    cornersDotOptions: {
+      type: 'dot',
+      color: '#000000'
+    },
+    backgroundOptions: {
+      color: '#ffffff'
     }
   })
+  qrCode.append(qrcodeContainer.value)
 })
 </script>
 
