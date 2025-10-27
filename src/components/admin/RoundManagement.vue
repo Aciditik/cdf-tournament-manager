@@ -213,13 +213,15 @@ const showRoundHistory = ref(false)
 const roundHistory = ref([])
 
 async function handleStartNewRound() {
-  if (!confirm(`Start Round ${gameStore.currentRound}? This will create new game pairings based on current standings.`)) {
+  const roundToGenerate = gameStore.currentRound
+  
+  if (!confirm(`Start Round ${roundToGenerate}? This will create new game pairings ${roundToGenerate === 1 ? 'with random assignment' : 'based on current standings'}.`)) {
     return
   }
 
   try {
     await gameStore.startNewRound()
-    emit('message', `✅ Round ${gameStore.currentRound - 1} pairings generated successfully!`, 'success')
+    emit('message', `✅ Round ${roundToGenerate} pairings generated successfully!`, 'success')
   } catch (error) {
     emit('message', `❌ Error: ${error.message}`, 'error')
   }

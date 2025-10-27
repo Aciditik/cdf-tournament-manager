@@ -201,13 +201,17 @@ async function saveScorecard() {
         name: corp.name
       }
       
+      // Calculate final placement (use auto-calculated if not manually set)
+      const finalPlacement = placements.value[i] || autoCalculatedPlacements.value[i]
+      const finalPlacementPoints = gameStore.getPlacementPoints(finalPlacement)
+      
       return {
         name,
         scores: playerScores,
         total: totals.value[i],
         rank: ranks.value[i],
-        placement: placements.value[i] || autoCalculatedPlacements.value[i],
-        placementPoints: placementPoints.value[i]
+        placement: finalPlacement,
+        placementPoints: finalPlacementPoints
       }
     })
   }

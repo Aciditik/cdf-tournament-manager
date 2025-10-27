@@ -1,5 +1,10 @@
 <template>
   <div class="bg-white p-5 rounded-b-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.1)]">
+    <!-- Fix Scorecards Tool -->
+    <div class="mb-6">
+      <FixScorecards @message="(text, type) => emit('message', text, type)" />
+    </div>
+
     <div class="flex gap-2.5 mb-5 flex-wrap">
       <button class="py-2.5 px-5 bg-primary text-white border-none rounded-[5px] cursor-pointer text-sm font-bold transition-colors hover:bg-[#5568d3]" @click="refreshData">🔄 Refresh Scorecards</button>
       <button class="py-2.5 px-5 bg-primary text-white border-none rounded-[5px] cursor-pointer text-sm font-bold transition-colors hover:bg-[#5568d3]" @click="exportRankings">📅 Export Rankings</button>
@@ -48,17 +53,21 @@
       </div>
     </div>
 
-    <!-- Rankings Table -->
+    <!-- Cumulative Rankings -->
     <div class="mt-10">
-      <h2 class="text-primary mb-5">🏆 Overall Rankings</h2>
-      <RankingsTable :rankings="gameStore.rankings" />
+      <CumulativeRankings :rankings="gameStore.rankings" />
+    </div>
+
+    <!-- Individual Game Rankings -->
+    <div class="mt-10">
+      <OverallRankings :rankings="gameStore.rankings" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { useGameStore } from '@/stores/gameStore'
-import RankingsTable from './RankingsTable.vue'
+import FixScorecards from './FixScorecards.vue'
 
 const emit = defineEmits(['message'])
 const gameStore = useGameStore()

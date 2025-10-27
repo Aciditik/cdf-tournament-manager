@@ -29,10 +29,13 @@ export const useGameStore = defineStore('game', {
         scorecard.players.forEach(player => {
           if (player.name) {
             allRankings.push({
+              gameId: scorecard.gameId,
               name: player.name,
               game: game?.name || 'Unknown Game',
               total: player.total,
               rank: player.rank,
+              placement: player.placement || (typeof player.rank === 'string' ? parseInt(player.rank) : player.rank),
+              placementPoints: player.placementPoints || 0,
               scores: player.scores
             })
           }
@@ -117,14 +120,22 @@ export const useGameStore = defineStore('game', {
     },
 
     async registerPlayer(name) {
+      // Fetch latest data to avoid race conditions
+      const latestData = await api.getData()
+      
       const player = {
         id: Date.now(),
         name: name.trim(),
         created_at: new Date().toISOString(),
         gameId: null
       }
-      this.players.push(player)
-      await this.saveData()
+      latestData.players.push(player)
+      
+      await api.saveData(latestData.players, latestData.scorecards)
+      
+      // Update local state
+      this.players = latestData.players
+      this.scorecards = latestData.scorecards
     },
 
     async deletePlayer(playerId) {
@@ -232,13 +243,32 @@ export const useGameStore = defineStore('game', {
     },
 
     async saveScorecard(scorecard) {
-      const existingIndex = this.scorecards.findIndex(s => s.gameId === scorecard.gameId)
-      if (existingIndex >= 0) {
-        this.scorecards[existingIndex] = scorecard
-      } else {
-        this.scorecards.push(scorecard)
+      // Fetch latest data first to avoid race conditions
+      try {
+        const latestData = await api.getData()
+        
+        // Find if this scorecard already exists in the latest data
+        const existingIndex = latestData.scorecards.findIndex(s => s.gameId === scorecard.gameId)
+        
+        if (existingIndex >= 0) {
+          // Update existing scorecard
+          latestData.scorecards[existingIndex] = scorecard
+        } else {
+          // Add new scorecard
+          latestData.scorecards.push(scorecard)
+        }
+        
+        // Save merged data
+        await api.saveData(latestData.players, latestData.scorecards)
+        
+        // Update local state with latest data
+        this.players = latestData.players
+        this.scorecards = latestData.scorecards
+        this.extractGames()
+      } catch (error) {
+        console.error('Error saving scorecard:', error)
+        throw error
       }
-      await this.saveData()
     },
 
     async deleteScorecards() {
@@ -276,12 +306,17 @@ export const useGameStore = defineStore('game', {
         throw new Error('Need at least 4 registered players to create games.')
       }
 
+      // Get current standings
+      const standings = this.swissStandings
+      
+      // If there are completed games, we're starting a NEW round, so increment
+      if (this.games.length > 0 && standings.length > 0) {
+        this.currentRound++
+      }
+
       // Clear current game assignments
       this.players.forEach(p => p.gameId = null)
       this.games = []
-
-      // Get current standings
-      const standings = this.swissStandings
       
       let sortedPlayers
 
@@ -333,9 +368,6 @@ export const useGameStore = defineStore('game', {
           player.gameId = this.games[gameIndex].id
         }
       })
-
-      // Increment round number
-      this.currentRound++
 
       await this.saveData()
       this.extractGames()
