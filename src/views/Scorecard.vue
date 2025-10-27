@@ -25,8 +25,11 @@
         :scores="scores"
         :totals="totals"
         :ranks="ranks"
+        :placements="placements"
+        :placement-points="placementPoints"
         @update:player-names="playerNames = $event"
         @update:scores="scores = $event"
+        @update:placements="placements = $event"
         @calculate="calculateTotals"
         @save="saveScorecard"
       />
@@ -53,6 +56,10 @@ const scores = ref([
   { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 },
   { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 }
 ])
+const placements = ref([null, null, null, null]) // Manual placement override
+const placementPoints = computed(() => {
+  return placements.value.map(p => p ? gameStore.getPlacementPoints(p) : 0)
+})
 
 const scorecardTitle = computed(() => {
   const game = gameStore.games.find(g => g.id === selectedGameId.value)
@@ -99,6 +106,20 @@ const ranks = computed(() => {
   return rankArray
 })
 
+// Auto-calculate placements from totals
+const autoCalculatedPlacements = computed(() => {
+  const ranked = totals.value
+    .map((total, index) => ({ index, total }))
+    .sort((a, b) => b.total - a.total)
+  
+  const placementArray = new Array(4).fill(null)
+  ranked.forEach((item, idx) => {
+    placementArray[item.index] = idx + 1 // 1st, 2nd, 3rd, 4th
+  })
+  
+  return placementArray
+})
+
 function loadScorecard(gameId) {
   selectedGameId.value = gameId
   const game = gameStore.games.find(g => g.id === gameId)
@@ -133,7 +154,10 @@ function loadScorecard(gameId) {
 }
 
 function calculateTotals() {
-  // Triggers computed properties to recalculate
+  // Auto-calculate placements if not manually set
+  placements.value = placements.value.map((p, i) => {
+    return p !== null ? p : autoCalculatedPlacements.value[i]
+  })
 }
 
 async function saveScorecard() {
@@ -158,8 +182,13 @@ async function saveScorecard() {
     { name: 'Saturn Systems', value: 0 }
   ]
   
+  // Get the game to find its round number
+  const game = gameStore.games.find(g => g.id === selectedGameId.value)
+  const roundNumber = game?.roundNumber || gameStore.currentRound - 1 || 1
+  
   const scorecardData = {
     gameId: selectedGameId.value,
+    roundNumber: roundNumber,
     savedAt: new Date().toISOString(),
     players: playerNames.value.map((name, i) => {
       const playerScores = { ...scores.value[i] }
@@ -176,7 +205,9 @@ async function saveScorecard() {
         name,
         scores: playerScores,
         total: totals.value[i],
-        rank: ranks.value[i]
+        rank: ranks.value[i],
+        placement: placements.value[i] || autoCalculatedPlacements.value[i],
+        placementPoints: placementPoints.value[i]
       }
     })
   }

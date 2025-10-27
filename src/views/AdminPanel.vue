@@ -58,12 +58,36 @@
         >
           🏆 Scorecards & Rankings
         </button>
+        <button 
+          :class="[
+            'py-[15px] px-[25px] bg-transparent border-none border-b-[3px] border-b-transparent cursor-pointer text-base font-bold text-[#666] transition-all hover:text-primary',
+            { 'text-primary border-b-primary': activeTab === 'standings' }
+          ]" 
+          @click="activeTab = 'standings'"
+        >
+          📊 Swiss Standings
+        </button>
+        <button 
+          :class="[
+            'py-[15px] px-[25px] bg-transparent border-none border-b-[3px] border-b-transparent cursor-pointer text-base font-bold text-[#666] transition-all hover:text-primary',
+            { 'text-primary border-b-primary': activeTab === 'rounds' }
+          ]" 
+          @click="activeTab = 'rounds'"
+        >
+          🎯 Round Management
+        </button>
       </div>
 
       <!-- Tab Content -->
       <PlayersTab v-if="activeTab === 'players'" @message="showMessage" />
       <GamesTab v-if="activeTab === 'games'" @message="showMessage" />
       <ScorecardsTab v-if="activeTab === 'scorecards'" @message="showMessage" />
+      <div v-if="activeTab === 'standings'" class="bg-white p-5 rounded-b-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.1)]">
+        <SwissStandings :standings="gameStore.swissStandings" />
+      </div>
+      <div v-if="activeTab === 'rounds'" class="rounded-b-[10px]">
+        <RoundManagement @message="showMessage" />
+      </div>
     </div>
   </div>
 </template>
@@ -75,6 +99,8 @@ import { useGameStore } from '@/stores/gameStore'
 import PlayersTab from '@/components/admin/PlayersTab.vue'
 import GamesTab from '@/components/admin/GamesTab.vue'
 import ScorecardsTab from '@/components/admin/ScorecardsTab.vue'
+import SwissStandings from '@/components/admin/SwissStandings.vue'
+import RoundManagement from '@/components/admin/RoundManagement.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()

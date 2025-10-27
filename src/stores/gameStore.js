@@ -7,7 +7,10 @@ export const useGameStore = defineStore('game', {
     games: [],
     scorecards: [],
     loading: false,
-    draggedPlayer: null
+    draggedPlayer: null,
+    currentRound: 1,
+    currentPhase: 1, // 1 = Qualification, 2 = Finals
+    placementPointsMap: { 1: 5, 2: 3, 3: 2, 4: 1 }
   }),
 
   getters: {
@@ -36,6 +39,64 @@ export const useGameStore = defineStore('game', {
         })
       })
       return allRankings.sort((a, b) => b.total - a.total)
+    },
+
+    // Swiss standings with placement points
+    swissStandings: (state) => {
+      // Build player stats from scorecards
+      const playerStats = new Map()
+      
+      state.players.forEach(player => {
+        playerStats.set(player.id, {
+          id: player.id,
+          name: player.name,
+          placementPoints: 0,
+          totalGameScore: 0,
+          rounds: [],
+          placementHistory: []
+        })
+      })
+
+      // Process each scorecard
+      state.scorecards.forEach(scorecard => {
+        scorecard.players.forEach(playerData => {
+          const player = state.players.find(p => p.name === playerData.name)
+          if (player && playerStats.has(player.id)) {
+            const stats = playerStats.get(player.id)
+            const placement = playerData.placement || playerData.rank
+            const placementPoints = state.placementPointsMap[placement] || 0
+            
+            stats.placementPoints += placementPoints
+            stats.totalGameScore += playerData.total || 0
+            stats.placementHistory.push(placementPoints)
+            stats.rounds.push({
+              roundNumber: scorecard.roundNumber || 1,
+              gameId: scorecard.gameId,
+              placement: placement,
+              placementPoints: placementPoints,
+              gameScore: playerData.total || 0
+            })
+          }
+        })
+      })
+
+      // Convert to array and sort
+      return Array.from(playerStats.values())
+        .filter(p => p.rounds.length > 0) // Only players with games
+        .sort((a, b) => {
+          // Primary: Placement points (descending)
+          if (b.placementPoints !== a.placementPoints) {
+            return b.placementPoints - a.placementPoints
+          }
+          // Tiebreaker: Total game score (descending)
+          return b.totalGameScore - a.totalGameScore
+        })
+        .map((player, index) => ({
+          ...player,
+          rank: index + 1,
+          displayRank: `${player.placementPoints} pts (${player.totalGameScore})`,
+          historyDisplay: player.placementHistory.join(' - ')
+        }))
     }
   },
 
@@ -187,6 +248,136 @@ export const useGameStore = defineStore('game', {
 
     async saveData() {
       await api.saveData(this.players, this.scorecards)
+    },
+
+    // Calculate placements automatically from game scores
+    calculatePlacements(players) {
+      // Sort by total score (descending)
+      const sorted = [...players].sort((a, b) => b.total - a.total)
+      
+      // Assign placements
+      sorted.forEach((player, index) => {
+        player.placement = index + 1
+        player.placementPoints = this.placementPointsMap[index + 1] || 0
+      })
+      
+      return sorted
+    },
+
+    // Helper to get placement points
+    getPlacementPoints(placement) {
+      return this.placementPointsMap[placement] || 0
+    },
+
+    // Start a new round with Swiss pairing (or random for Round 1)
+    async startNewRound() {
+      // Check if we have any players
+      if (this.players.length < 4) {
+        throw new Error('Need at least 4 registered players to create games.')
+      }
+
+      // Clear current game assignments
+      this.players.forEach(p => p.gameId = null)
+      this.games = []
+
+      // Get current standings
+      const standings = this.swissStandings
+      
+      let sortedPlayers
+
+      // Round 1: Random or all players
+      if (this.currentRound === 1 || standings.length === 0) {
+        // Use all registered players for Round 1
+        sortedPlayers = [...this.players].sort(() => Math.random() - 0.5) // Shuffle randomly
+      } else {
+        // Round 2+: Swiss pairing based on standings
+        // Get players who have played at least one game
+        const activePlayers = this.players.filter(p => 
+          standings.some(s => s.id === p.id)
+        )
+
+        if (activePlayers.length < 4) {
+          throw new Error('Need at least 4 players with completed games for Swiss pairing.')
+        }
+
+        // Sort players by current standings
+        sortedPlayers = activePlayers.sort((a, b) => {
+          const aStats = standings.find(s => s.id === a.id)
+          const bStats = standings.find(s => s.id === b.id)
+          
+          // Sort by placement points, then by game score
+          if (bStats.placementPoints !== aStats.placementPoints) {
+            return bStats.placementPoints - aStats.placementPoints
+          }
+          return bStats.totalGameScore - aStats.totalGameScore
+        })
+      }
+
+      // Create games
+      const numGames = Math.ceil(sortedPlayers.length / 4)
+      
+      for (let i = 0; i < numGames; i++) {
+        const gameId = Date.now() + i
+        this.games.push({
+          id: gameId,
+          name: `Round ${this.currentRound} - Game ${i + 1}`,
+          players: [],
+          roundNumber: this.currentRound
+        })
+      }
+
+      // Assign players to games
+      sortedPlayers.forEach((player, index) => {
+        const gameIndex = Math.floor(index / 4)
+        if (gameIndex < this.games.length) {
+          player.gameId = this.games[gameIndex].id
+        }
+      })
+
+      // Increment round number
+      this.currentRound++
+
+      await this.saveData()
+      this.extractGames()
+    },
+
+    // Reset tournament (start fresh)
+    async resetTournament() {
+      this.currentRound = 1
+      this.currentPhase = 1
+      this.players.forEach(p => p.gameId = null)
+      this.games = []
+      this.scorecards = []
+      await this.saveData()
+    },
+
+    // Advance to next phase (Top 32)
+    async advanceToPhase2() {
+      const standings = this.swissStandings
+      
+      if (standings.length < 32) {
+        throw new Error('Need at least 32 players to advance to Phase 2.')
+      }
+
+      // Get top 32 players
+      const top32 = standings.slice(0, 32)
+      const top32Ids = new Set(top32.map(p => p.id))
+
+      // Remove players not in top 32
+      this.players = this.players.filter(p => top32Ids.has(p.id))
+
+      // Clear game assignments
+      this.players.forEach(p => p.gameId = null)
+      this.games = []
+
+      // Reset scores for phase 2 (fresh start)
+      this.scorecards = []
+
+      // Update phase and reset round
+      this.currentPhase = 2
+      this.currentRound = 4 // Phase 2 starts at round 4
+
+      await this.saveData()
     }
   }
 })

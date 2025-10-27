@@ -93,14 +93,17 @@ import { ref, watch, computed } from 'vue'
 const props = defineProps({
   scorecardTitle: String,
   playerNames: Array,
+  placements: Array,
+  placementPoints: Array,
   scores: Array,
   totals: Array,
   ranks: Array
 })
 
-const emit = defineEmits(['update:scores', 'calculate', 'save'])
+const emit = defineEmits(['update:scores', 'update:placements', 'calculate', 'save'])
 
 const localScores = ref(JSON.parse(JSON.stringify(props.scores)))
+const localPlacements = ref([...props.placements])
 
 // Initialize corporationName field if it doesn't exist
 localScores.value.forEach(score => {
@@ -166,6 +169,11 @@ function validateNumberInput(event) {
   if (!/^[0-9]$/.test(char)) {
     event.preventDefault()
   }
+}
+
+function handlePlacementChange() {
+  emit('update:placements', localPlacements.value)
+  emit('calculate')
 }
 
 function handleSave() {
