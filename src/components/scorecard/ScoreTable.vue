@@ -55,9 +55,12 @@
                 type="number" 
                 v-model.number="localScores[i-1][category.key]"
                 @input="handleScoreChange"
+                @keypress="validateNumberInput"
                 class="w-full p-2 border border-[#ddd] rounded text-center text-sm box-border focus:outline-none focus:border-primary"
                 min="0"
-                value="0"
+                step="1"
+                inputmode="numeric"
+                pattern="[0-9]*"
               >
             </td>
           </tr>
@@ -155,6 +158,14 @@ function handleCorporationChange(playerIndex) {
 function handleScoreChange() {
   emit('update:scores', localScores.value)
   emit('calculate')
+}
+
+function validateNumberInput(event) {
+  // Allow only digits (0-9)
+  const char = String.fromCharCode(event.keyCode || event.which)
+  if (!/^[0-9]$/.test(char)) {
+    event.preventDefault()
+  }
 }
 
 function handleSave() {
