@@ -96,7 +96,7 @@ onMounted(() => {
     height: 250,
     margin: 10,
     type: 'canvas',
-    image: 'public/favicon/web-app-manifest-192x192.png',
+    image: '/cdf-tournament-manager/favicon/web-app-manifest-192x192.png',
     qrOptions: {
       errorCorrectionLevel: 'H'
     },
