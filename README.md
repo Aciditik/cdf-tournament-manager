@@ -54,3 +54,33 @@ git push
 # 2. Redeploy to GitHub Pages
 npm run deploy
 ```
+# TOURNAMENT SEEDING RULES 
+
+## 1. Placement point (Primary ranking)
+
+1st place in a game = 5 points
+2nd place in a game = 3 points
+3rd place in a game = 2 points
+4th place in a game = 1 point
+
+Your total placement points determine your rank.
+
+## 2. TIEBREAKER (Equal placement points)
+
+We add up your actual game scores from all rounds
+  Example: If you scored 78, 84, and 76 in three games,
+  your tiebreaker is 238 points
+  Higher total game score = higher rank
+
+## 3. PAIRING FOR NEXT ROUND
+
+Players are grouped by similar placement points
+Top performers play against each other
+This ensures competitive, balanced games
+
+## 4. EXAMPLE 
+
+1. Player A - 15 pts (238) ← 3 first places, 238 total score
+2. Player B - 15 pts (220) ← 3 first places, 220 total score
+3. Player C - 13 pts (245) ← 2 firsts + 1 second
+
