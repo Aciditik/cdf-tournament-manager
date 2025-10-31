@@ -1,9 +1,9 @@
 <template>
   <div class="bg-white p-5 rounded-[10px] mb-5 shadow-[0_2px_10px_rgba(0,0,0,0.1)]">
     <div class="flex gap-[15px] items-center justify-center flex-wrap">
-      <label for="gameSelect" class="font-bold text-[#333]">Select Your Game:</label>
+      <label for="gameSelect" class="font-bold text-[#333]">Choisissez votre table:</label>
       <select v-model="selectedGameId" id="gameSelect" :disabled="loading" class="py-2.5 px-[15px] border-2 border-primary rounded-[5px] text-base min-w-[200px]">
-        <option value="">-- Choose Game --</option>
+        <option value="">-- Choisir une table --</option>
         <option 
           v-for="game in games" 
           :key="game.id" 

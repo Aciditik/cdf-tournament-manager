@@ -121,18 +121,28 @@ const isCorporationSelected = (corpName, currentPlayerIndex) => {
 }
 
 const corporations = [
+  { name: 'Cheung Shing Mars', value: 0 },
   { name: 'Credicor', value: 0 },
   { name: 'Ecoline', value: 0 },
+  { name: 'Ecotec', value: 0 },
   { name: 'Helion', value: 0 },
-  { name: 'Mining Guild', value: 0 },
   { name: 'Interplanetary Cinematics', value: 0 },
   { name: 'Inventrix', value: 0 },
+  { name: 'Mining Guild', value: 0 },
+  { name: 'Nirgal Enterprise', value: 0 },
+  { name: 'Palladin Shipping', value: 0 },
   { name: 'Phobolog', value: 0 },
+  { name: 'Point Luna', value: 0 },
+  { name: 'Robinson Industries', value: 0 },
+  { name: 'Sagitta', value: 0 },
+  { name: 'Saturn Systems', value: 0 },
+  { name: 'Spire', value: 0 },
+  { name: 'Teractor', value: 0 },
   { name: 'Tharsis Republic', value: 0 },
   { name: 'Thorgate', value: 0 },
   { name: 'United Nations Mars Initiative', value: 0 },
-  { name: 'Teractor', value: 0 },
-  { name: 'Saturn Systems', value: 0 }
+  { name: 'Valley Trust', value: 0 },
+  { name: 'Vitor', value: 0 }
 ]
 
 const scoreCategories = [

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-[#f5f5f5] p-[15px] w-full box-border">
     <div class="max-w-[900px] mx-auto w-full">
-      <h1 class="text-[#333] mb-[15px] text-center text-2xl md:text-xl md:mb-2.5">🎯 Game Scorecard</h1>
+      <h1 class="text-[#333] mb-[15px] text-center text-2xl md:text-xl md:mb-2.5">🎯 Scoring des tables</h1>
       
       <div v-if="message" :class="[
         'text-center p-3 mb-5 rounded-lg font-bold',
@@ -125,7 +125,7 @@ function loadScorecard(gameId) {
   const game = gameStore.games.find(g => g.id === gameId)
   
   if (!game) {
-    showMessage('❌ Game not found', 'error')
+    showMessage('❌ Table non trouvée', 'error')
     return
   }
   
@@ -162,24 +162,34 @@ function calculateTotals() {
 
 async function saveScorecard() {
   if (!selectedGameId.value) {
-    showMessage('❌ No game selected', 'error')
+    showMessage('❌ Pas de table choisie', 'error')
     return
   }
   
   // Corporation list for name lookup
   const corporations = [
+    { name: 'Cheung Shing Mars', value: 0 },
     { name: 'Credicor', value: 0 },
     { name: 'Ecoline', value: 0 },
+    { name: 'Ecotec', value: 0 },
     { name: 'Helion', value: 0 },
-    { name: 'Mining Guild', value: 0 },
     { name: 'Interplanetary Cinematics', value: 0 },
     { name: 'Inventrix', value: 0 },
+    { name: 'Mining Guild', value: 0 },
+    { name: 'Nirgal Enterprise', value: 0 },
+    { name: 'Palladin Shipping', value: 0 },
     { name: 'Phobolog', value: 0 },
+    { name: 'Point Luna', value: 0 },
+    { name: 'Robinson Industries', value: 0 },
+    { name: 'Sagitta', value: 0 },
+    { name: 'Saturn Systems', value: 0 },
+    { name: 'Spire', value: 0 },
+    { name: 'Teractor', value: 0 },
     { name: 'Tharsis Republic', value: 0 },
     { name: 'Thorgate', value: 0 },
     { name: 'United Nations Mars Initiative', value: 0 },
-    { name: 'Teractor', value: 0 },
-    { name: 'Saturn Systems', value: 0 }
+    { name: 'Valley Trust', value: 0 },
+    { name: 'Vitor', value: 0 }
   ]
   
   // Get the game to find its round number
@@ -218,7 +228,7 @@ async function saveScorecard() {
   
   try {
     await gameStore.saveScorecard(scorecardData)
-    showMessage('✅ Scorecard saved successfully!', 'success')
+    showMessage('✅ Tableau des scores enregistré avec succès!', 'success')
   } catch (error) {
     showMessage('❌ Error saving: ' + error.message, 'error')
   }
