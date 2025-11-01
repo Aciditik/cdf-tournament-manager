@@ -9,7 +9,7 @@
           :key="game.id" 
           :value="game.id"
         >
-          {{ game.name }} ({{ game.players.length }} players)
+          {{ game.name }} = {{ getPlayerNames(game) }}
         </option>
       </select>
       <button 
@@ -44,5 +44,12 @@ function loadGame() {
   if (selectedGameId.value) {
     emit('load-scorecard', parseInt(selectedGameId.value))
   }
+}
+
+function getPlayerNames(game) {
+  if (!game.players || game.players.length === 0) {
+    return '(Empty)'
+  }
+  return game.players.map(p => p.name).join(', ')
 }
 </script>

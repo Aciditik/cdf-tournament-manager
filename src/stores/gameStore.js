@@ -10,7 +10,8 @@ export const useGameStore = defineStore('game', {
     draggedPlayer: null,
     currentRound: 1,
     currentPhase: 1, // 1 = Qualification, 2 = Finals
-    placementPointsMap: { 1: 5, 2: 3, 3: 2, 4: 1 }
+    placementPointsMap: { 1: 5, 2: 3, 3: 2, 4: 1 },
+    nextTableNumber: 1 // Track next available table number
   }),
 
   getters: {
@@ -110,6 +111,18 @@ export const useGameStore = defineStore('game', {
         const data = await api.getData()
         this.players = data.players
         this.scorecards = data.scorecards
+        
+        // Initialize nextTableNumber based on existing table numbers
+        const existingTableNumbers = this.players
+          .filter(p => p.tableNumber && typeof p.tableNumber === 'number')
+          .map(p => p.tableNumber)
+        
+        if (existingTableNumbers.length > 0) {
+          this.nextTableNumber = Math.max(...existingTableNumbers) + 1
+        } else {
+          this.nextTableNumber = 1
+        }
+        
         this.extractGames()
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -150,6 +163,7 @@ export const useGameStore = defineStore('game', {
     },
 
     extractGames() {
+      const previousGames = [...this.games]
       this.games = []
       const gameIds = new Set()
       
@@ -157,9 +171,20 @@ export const useGameStore = defineStore('game', {
         if (player.gameId && !gameIds.has(player.gameId)) {
           gameIds.add(player.gameId)
           const gamePlayers = this.players.filter(p => p.gameId === player.gameId)
+          
+          // Find existing game data to preserve table number
+          const existingGame = previousGames.find(g => g.id === player.gameId)
+          let tableNumber = existingGame?.tableNumber || player.tableNumber
+          
+          // Only assign new table number if none exists
+          if (!tableNumber) {
+            tableNumber = this.nextTableNumber++
+          }
+          
           this.games.push({
             id: player.gameId,
-            name: `Game ${this.games.length + 1}`,
+            name: `Table ${tableNumber}`,
+            tableNumber: tableNumber,
             players: gamePlayers
           })
         }
@@ -168,9 +193,11 @@ export const useGameStore = defineStore('game', {
 
     addNewGame() {
       const gameId = Date.now()
+      const tableNumber = this.nextTableNumber++
       this.games.push({
         id: gameId,
-        name: `Game ${this.games.length + 1}`,
+        name: `Table ${tableNumber}`,
+        tableNumber: tableNumber,
         players: []
       })
     },
@@ -186,11 +213,13 @@ export const useGameStore = defineStore('game', {
       // Calculate number of games
       const numGames = Math.ceil(totalPlayers / 4)
       
-      // Create games
+      // Create games with stable table numbers
       for (let i = 0; i < numGames; i++) {
+        const tableNumber = this.nextTableNumber++
         this.games.push({
           id: Date.now() + i,
-          name: `Game ${i + 1}`,
+          name: `Table ${tableNumber}`,
+          tableNumber: tableNumber,
           players: []
         })
       }
@@ -200,6 +229,7 @@ export const useGameStore = defineStore('game', {
       shuffled.forEach((player, index) => {
         const gameIndex = index % numGames
         player.gameId = this.games[gameIndex].id
+        player.tableNumber = this.games[gameIndex].tableNumber
       })
 
       await this.saveData()
@@ -208,11 +238,51 @@ export const useGameStore = defineStore('game', {
 
     async assignPlayerToGame(playerId, gameId) {
       const player = this.players.find(p => p.id === playerId)
-      if (player) {
+      const game = this.games.find(g => g.id === gameId)
+      if (player && game) {
         player.gameId = gameId
+        player.tableNumber = game.tableNumber
         await this.saveData()
         this.extractGames()
       }
+    },
+
+    async assignPlayerToTableNumber(playerId, tableNumber) {
+      const player = this.players.find(p => p.id === playerId)
+      if (!player) return
+
+      // Find if a game with this table number already exists
+      let game = this.games.find(g => g.tableNumber === tableNumber)
+      
+      if (!game) {
+        // Create new game with this table number
+        const gameId = Date.now()
+        game = {
+          id: gameId,
+          name: `Table ${tableNumber}`,
+          tableNumber: tableNumber,
+          players: []
+        }
+        this.games.push(game)
+        
+        // Update nextTableNumber if needed
+        if (tableNumber >= this.nextTableNumber) {
+          this.nextTableNumber = tableNumber + 1
+        }
+      }
+
+      // Check if game is full (max 4 players)
+      const playersInGame = this.players.filter(p => p.gameId === game.id)
+      if (playersInGame.length >= 4 && player.gameId !== game.id) {
+        throw new Error(`Table ${tableNumber} is full (4 players max)`)
+      }
+
+      // Assign player to game
+      player.gameId = game.id
+      player.tableNumber = tableNumber
+
+      await this.saveData()
+      this.extractGames()
     },
 
     async removePlayerFromGame(playerId) {
@@ -236,8 +306,12 @@ export const useGameStore = defineStore('game', {
     },
 
     async clearAllGames() {
-      this.players.forEach(p => p.gameId = null)
+      this.players.forEach(p => {
+        p.gameId = null
+        p.tableNumber = null
+      })
       this.games = []
+      this.nextTableNumber = 1
       await this.saveData()
       this.extractGames()
     },
@@ -353,9 +427,11 @@ export const useGameStore = defineStore('game', {
       
       for (let i = 0; i < numGames; i++) {
         const gameId = Date.now() + i
+        const tableNumber = this.nextTableNumber++
         this.games.push({
           id: gameId,
-          name: `Round ${this.currentRound} - Game ${i + 1}`,
+          name: `Table ${tableNumber}`,
+          tableNumber: tableNumber,
           players: [],
           roundNumber: this.currentRound
         })
@@ -366,6 +442,7 @@ export const useGameStore = defineStore('game', {
         const gameIndex = Math.floor(index / 4)
         if (gameIndex < this.games.length) {
           player.gameId = this.games[gameIndex].id
+          player.tableNumber = this.games[gameIndex].tableNumber
         }
       })
 
@@ -377,7 +454,11 @@ export const useGameStore = defineStore('game', {
     async resetTournament() {
       this.currentRound = 1
       this.currentPhase = 1
-      this.players.forEach(p => p.gameId = null)
+      this.nextTableNumber = 1
+      this.players.forEach(p => {
+        p.gameId = null
+        p.tableNumber = null
+      })
       this.games = []
       this.scorecards = []
       await this.saveData()

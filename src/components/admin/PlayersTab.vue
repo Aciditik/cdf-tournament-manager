@@ -11,6 +11,7 @@
         <tr>
           <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">#</th>
           <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">Name</th>
+          <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">Table #</th>
           <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">Game</th>
           <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">Registered At</th>
           <th class="p-3 text-left font-bold text-[#333] border-b-2 border-[#dee2e6]">Actions</th>
@@ -18,16 +19,26 @@
       </thead>
       <tbody>
         <tr v-if="gameStore.loading">
-          <td colspan="5" class="text-center p-[30px]">Loading...</td>
+          <td colspan="6" class="text-center p-[30px]">Loading...</td>
         </tr>
         <tr v-else-if="gameStore.players.length === 0">
-          <td colspan="5" class="text-center p-[30px] text-[#999]">
+          <td colspan="6" class="text-center p-[30px] text-[#999]">
             No players registered yet
           </td>
         </tr>
         <tr v-else v-for="(player, index) in sortedPlayers" :key="player.id" class="hover:bg-[#f8f9fa]">
           <td class="p-3 border-b border-[#dee2e6]">{{ index + 1 }}</td>
           <td class="p-3 border-b border-[#dee2e6]"><strong>{{ player.name }}</strong></td>
+          <td class="p-3 border-b border-[#dee2e6]">
+            <input 
+              type="number" 
+              min="1" 
+              :value="player.tableNumber || ''"
+              @change="assignTableNumber(player.id, $event.target.value)"
+              placeholder="#"
+              class="w-16 p-1.5 border-2 border-[#ddd] rounded text-center focus:border-primary focus:outline-none"
+            />
+          </td>
           <td class="p-3 border-b border-[#dee2e6]">{{ getGameName(player.gameId) }}</td>
           <td class="p-3 border-b border-[#dee2e6]">{{ formatDate(player.created_at) }}</td>
           <td class="p-3 border-b border-[#dee2e6]">
@@ -102,6 +113,22 @@ async function clearAllPlayers() {
     emit('message', '✅ All players cleared', 'success')
   } catch (error) {
     emit('message', '❌ Error clearing: ' + error.message, 'error')
+  }
+}
+
+async function assignTableNumber(playerId, tableNumber) {
+  const tableNum = parseInt(tableNumber)
+  
+  if (!tableNum || tableNum < 1) {
+    emit('message', '❌ Please enter a valid table number', 'error')
+    return
+  }
+  
+  try {
+    await gameStore.assignPlayerToTableNumber(playerId, tableNum)
+    emit('message', `✅ Player assigned to Table ${tableNum}`, 'success')
+  } catch (error) {
+    emit('message', '❌ Error assigning: ' + error.message, 'error')
   }
 }
 </script>
