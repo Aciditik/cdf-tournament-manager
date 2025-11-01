@@ -5,11 +5,11 @@
       <select v-model="selectedGameId" id="gameSelect" :disabled="loading" class="py-2.5 px-[15px] border-2 border-primary rounded-[5px] text-base min-w-[200px]">
         <option value="">-- Choisir une table --</option>
         <option 
-          v-for="game in games" 
+          v-for="game in sortedGames" 
           :key="game.id" 
           :value="game.id"
         >
-          {{ game.name }} = {{ getPlayerNames(game) }}
+          {{ game.name }}
         </option>
       </select>
       <button 
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   games: {
@@ -39,6 +39,14 @@ const props = defineProps({
 
 const emit = defineEmits(['load-scorecard'])
 const selectedGameId = ref('')
+
+const sortedGames = computed(() => {
+  return [...props.games].sort((a, b) => {
+    const tableA = a.tableNumber || 0
+    const tableB = b.tableNumber || 0
+    return tableA - tableB
+  })
+})
 
 function loadGame() {
   if (selectedGameId.value) {
