@@ -3,13 +3,6 @@
     <div class="max-w-[900px] mx-auto w-full">
       <h1 class="text-[#333] mb-[15px] text-center text-2xl md:text-xl md:mb-2.5">🎯 Scoring des tables</h1>
       
-      <div v-if="message" :class="[
-        'text-center p-3 mb-5 rounded-lg font-bold',
-        message.type === 'success' ? 'bg-green-100 text-green-800 border-2 border-green-200' : 'bg-red-100 text-red-800 border-2 border-red-200'
-      ]">
-        {{ message.text }}
-      </div>
-      
       <!-- Game Selector -->
       <GameSelector 
         :games="gameStore.games"
@@ -33,6 +26,14 @@
         @calculate="calculateTotals"
         @save="saveScorecard"
       />
+      
+      <!-- Message displayed below the save button -->
+      <div v-if="message" :class="[
+        'text-center p-3 mt-5 rounded-lg font-bold',
+        message.type === 'success' ? 'bg-green-100 text-green-800 border-2 border-green-200' : 'bg-red-100 text-red-800 border-2 border-red-200'
+      ]">
+        {{ message.text }}
+      </div>
     </div>
   </div>
 </template>
