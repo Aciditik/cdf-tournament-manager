@@ -71,6 +71,28 @@
             <td v-for="(total, i) in totals" :key="i" class="p-2.5 text-center border border-[#ddd]">{{ total }}</td>
           </tr>
           
+          <!-- Tiebreaker Row (only shown when there are ties) -->
+          <tr v-if="hasTies" class="bg-[#e3f2fd]">
+            <td class="bg-[#ff7043] text-white font-bold text-left pl-[15px] p-2.5 text-center border border-[#ddd]">
+              Bonus départage
+              <div class="text-xs font-normal mt-1">(ne compte pas dans le total)</div>
+            </td>
+            <td v-for="i in 4" :key="i" class="p-2.5 text-center border border-[#ddd]">
+              <input 
+                type="number" 
+                v-model.number="localScores[i-1].tiebreaker"
+                @input="handleScoreChange"
+                @keypress="validateNumberInput"
+                class="w-full p-2 border border-[#ddd] rounded text-center text-sm box-border focus:outline-none focus:border-primary"
+                min="0"
+                step="1"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                placeholder="0"
+              >
+            </td>
+          </tr>
+          
           <!-- Rank Row -->
           <tr class="bg-[#b0bec5] font-bold">
             <td class="bg-[#ff7043] text-white font-bold text-left pl-[15px] p-2.5 text-center border border-[#ddd]">Classement</td>
@@ -105,10 +127,24 @@ const emit = defineEmits(['update:scores', 'update:placements', 'calculate', 'sa
 const localScores = ref(JSON.parse(JSON.stringify(props.scores)))
 const localPlacements = ref([...props.placements])
 
-// Initialize corporationName field if it doesn't exist
+// Check if there are any ties in the totals
+const hasTies = computed(() => {
+  const totalCounts = {}
+  props.totals.forEach(total => {
+    if (total > 0) { // Only count non-zero totals
+      totalCounts[total] = (totalCounts[total] || 0) + 1
+    }
+  })
+  return Object.values(totalCounts).some(count => count > 1)
+})
+
+// Initialize corporationName and tiebreaker fields if they don't exist
 localScores.value.forEach(score => {
   if (!score.corporationName) {
     score.corporationName = ''
+  }
+  if (score.tiebreaker === undefined) {
+    score.tiebreaker = 0
   }
 })
 

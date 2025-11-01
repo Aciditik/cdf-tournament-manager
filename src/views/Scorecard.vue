@@ -51,10 +51,10 @@ const message = ref(null)
 
 const playerNames = ref(['', '', '', ''])
 const scores = ref([
-  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 },
-  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 },
-  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 },
-  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0 }
+  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0, tiebreaker: 0 },
+  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0, tiebreaker: 0 },
+  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0, tiebreaker: 0 },
+  { corporationName: '', corporation: 0, tr: 0, rewards: 0, objectives: 0, forests: 0, cities: 0, cards: 0, tiebreaker: 0 }
 ])
 const placements = ref([null, null, null, null]) // Manual placement override
 const placementPoints = computed(() => {
@@ -81,15 +81,28 @@ const totals = computed(() => {
 
 const ranks = computed(() => {
   const ranked = totals.value
-    .map((total, index) => ({ index, total }))
-    .sort((a, b) => b.total - a.total)
+    .map((total, index) => ({ 
+      index, 
+      total, 
+      tiebreaker: scores.value[index].tiebreaker || 0 
+    }))
+    .sort((a, b) => {
+      // First sort by total score (descending)
+      if (b.total !== a.total) {
+        return b.total - a.total
+      }
+      // If totals are equal, sort by tiebreaker (descending)
+      return b.tiebreaker - a.tiebreaker
+    })
   
   const rankArray = new Array(4).fill('-')
   let currentRank = 1
   let previousTotal = -1
+  let previousTiebreaker = -1
   
   ranked.forEach((item, idx) => {
-    if (item.total !== previousTotal) {
+    // Only advance rank if both total AND tiebreaker are different
+    if (item.total !== previousTotal || item.tiebreaker !== previousTiebreaker) {
       currentRank = idx + 1
     }
     
@@ -101,6 +114,7 @@ const ranks = computed(() => {
     
     rankArray[item.index] = rankText
     previousTotal = item.total
+    previousTiebreaker = item.tiebreaker
   })
   
   return rankArray
@@ -139,6 +153,7 @@ function loadScorecard(gameId) {
     score.forests = 0
     score.cities = 0
     score.cards = 0
+    score.tiebreaker = 0
   })
   playerNames.value = ['', '', '', '']
   
